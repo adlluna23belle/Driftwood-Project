@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driftwood Furniture Shop</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilo para sa Autocomplete Dropdown - Quiz 5 Requirement */
+        .search-container {
+            position: relative;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .autocomplete-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            z-index: 1000;
+            max-height: 250px;
+            overflow-y: auto;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #f8f9fa;
+            color: #333;
+            text-align: left;
+        }
+        .suggestion-item:last-child { border-bottom: none; }
+        .suggestion-item:hover {
+            background-color: #f5ebe6;
+        }
+        .suggestion-item img {
+            object-fit: cover;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <header class="text-center py-4 bg-dark text-white">
+        <h1>DRIFTWOOD FURNITURE SHOP</h1>
+        <p>Premium Handmade Driftwood Furnitures</p>
+        <div class="mt-2">
+            <a href="admin.html" class="btn btn-sm btn-outline-warning me-2">Go to Admin View</a>
+            <a href="login.html" class="btn btn-sm btn-light">Login / Register</a>
+        </div>
+        
+        <div class="mt-4 search-container">
+            <input type="text" id="searchBar" class="form-control form-control-lg" placeholder="Search for driftwood items (e.g., table, mirror)..." autocomplete="off">
+            <div id="autocompleteBox" class="autocomplete-suggestions d-none"></div>
+        </div>
+    </header>
+
+    <div class="container mt-5">
+        <h2 class="mb-4 text-center text-brown" id="displayTitle">Our Product Showroom</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-4" id="productsShowcase"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var allProducts = []; // Lalagyan ng master copy ng listahan galing sa DB
+
+            // 1. Kukunin muna ang lahat ng produkto sa simula (Read API)
+            $.ajax({
+                url: '/api/products',
+                type: 'GET',
+                success: function(products) {
+                    allProducts = products;
+                    renderProducts(allProducts); // I-display ang buong listahan
+                }
+            });
+
+            // Function para mag-render ng bootstrap cards sa screen
+            function renderProducts(list) {
+                var container = $('#productsShowcase');
+                container.empty();
+
+                if(list.length === 0) {
+                    container.html('<div class="col-12 text-center my-5"><p class="text-muted">No furniture found matching your criteria.</p></div>');
+                    return;
+                }
+
+                list.forEach(item => {
+                    var imageSrc = 'https://via.placeholder.com/300x200';
+                    try {
+                        var images = JSON.parse(item.image);
+                        if(images.length > 0) imageSrc = images[0]; // Kukunin ang unang litrato
+                    } catch(e) { if(item.image) imageSrc = item.image; }
+
+                    var cardHTML = `
+                        <div class="col">
+                            <div class="card h-100 shadow-sm">
+                                <img src="${imageSrc}" class="card-img-top" alt="${item.name}" style="height: 220px; object-fit: cover;">
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title text-brown">${item.name}</h5>
+                                    <p class="card-text text-muted small">${item.description}</p>
+                                    <h6 class="mt-auto text-success font-monospace fw-bold" style="font-size: 1.2rem;">₱${parseFloat(item.price).toFixed(2)}</h6>
+                                    <button class="btn btn-wood btn-sm mt-2 w-100">Add to Order</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.append(cardHTML);
+                });
+            }
+
+            // --- QUIZ 5: JQUERY AUTOCOMPLETE LOGIC ---
+            $('#searchBar').on('input', function() {
+                var query = $(this).val().toLowerCase().trim();
+                var box = $('#autocompleteBox');
+                box.empty();
+
+                // Kung walang laman ang search bar, itago ang dropdown box at i-restore ang lahat ng items
+                if (query.length === 0) {
+                    box.addClass('d-none');
+                    $('#displayTitle').text('Our Product Showroom');
+                    renderProducts(allProducts);
+                    return;
+                }
+
+                // Salain ang mga produkto na tumutugma ang pangalan o description sa tinatype
+                var filtered = allProducts.filter(p => 
+                    p.name.toLowerCase().includes(query) || 
+                    p.description.toLowerCase().includes(query)
+                );
+
+                if (filtered.length > 0) {
+                    box.removeClass('d-none');
+                    // Maglagay ng hanggang 5 mabilis na mungkahi (suggestions) sa dropdown box
+                    filtered.slice(0, 5).forEach(item => {
+                        var imgUrl = 'https://via.placeholder.com/40';
+                        try {
+                            var imgs = JSON.parse(item.image);
+                            if(imgs.length > 0) imgUrl = imgs[0];
+                        } catch(e) { if(item.image) imgUrl = item.image; }
+
+                        var rowHTML = `
+                            <div class="suggestion-item" data-name="${item.name}">
+                                <img src="${imgUrl}" width="40" height="40" class="rounded">
+                                <div>
+                                    <div class="fw-bold small">${item.name}</div>
+                                    <div class="text-success small font-monospace">₱${parseFloat(item.price).toFixed(2)}</div>
+                                </div>
+                            </div>
+                        `;
+                        box.append(rowHTML);
+                    });
+                } else {
+                    // Kung walang tumugma, ipakita na walang resulta
+                    box.removeClass('d-none');
+                    box.html('<div class="p-3 text-muted small text-center">No products found...</div>');
+                }
+            });
+
+            // Kapag may pinindot na item sa Autocomplete dropdown menu
+            $(document).on('click', '.suggestion-item', function() {
+                var selectedName = $(this).data('name');
+                if(!selectedName) return;
+
+                $('#searchBar').val(selectedName);
+                $('#autocompleteBox').addClass('d-none');
+
+                // I-filter ang showroom para ipakita lang ang eksaktong pinili
+                var finalFilter = allProducts.filter(p => p.name === selectedName);
+                $('#displayTitle').text('Search Result for: ' + selectedName);
+                renderProducts(finalFilter);
+            });
+
+            // Itago ang autocomplete dropdown kapag nag-click sa labas ng search bar ang user
+            $(document).click(function(e) {
+                if (!$(e.target).closest('.search-container').length) {
+                    $('#autocompleteBox').addClass('d-none');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
