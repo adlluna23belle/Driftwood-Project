@@ -48,19 +48,55 @@
     </style>
 </head>
 <body>
-    <header class="text-center py-4 bg-dark text-white">
-        <h1>DRIFTWOOD FURNITURE SHOP</h1>
-        <p>Premium Handmade Driftwood Furnitures</p>
-        <div class="mt-2">
-            <a href="admin.html" class="btn btn-sm btn-outline-warning me-2">Go to Admin View</a>
-            <a href="login.html" class="btn btn-sm btn-light">Login / Register</a>
+<header class="bg-dark text-white py-3">
+
+    <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+                <h3 class="mb-0">DRIFTWOOD FURNITURE SHOP</h3>
+                <small>Premium Handmade Driftwood Furnitures</small>
+            </div>
+
+            <div>
+                <a href="index.html" class="btn btn-outline-light btn-sm me-2">
+                    Home
+                </a>
+
+                <a href="cart.html"
+class="btn btn-outline-light btn-sm me-2">
+    My Cart
+                </a>
+
+                <a href="orders.html"
+                   class="btn btn-outline-info btn-sm me-2">
+                    My Orders
+                </a>
+
+                <button id="logoutBtn" class="btn btn-danger btn-sm">
+                    Logout
+                </button>
+            </div>
+
         </div>
-        
-        <div class="mt-4 search-container">
-            <input type="text" id="searchBar" class="form-control form-control-lg" placeholder="Search for driftwood items (e.g., table, mirror)..." autocomplete="off">
-            <div id="autocompleteBox" class="autocomplete-suggestions d-none"></div>
+
+        <div class="search-container">
+            <input
+                type="text"
+                id="searchBar"
+                class="form-control form-control-lg"
+                placeholder="Search for driftwood items (e.g., table, mirror)..."
+                autocomplete="off">
+
+            <div id="autocompleteBox"
+                 class="autocomplete-suggestions d-none">
+            </div>
         </div>
-    </header>
+
+    </div>
+
+</header>
 
     <div class="container mt-5">
         <h2 class="mb-4 text-center text-brown" id="displayTitle">Our Product Showroom</h2>
@@ -70,7 +106,24 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
-            var allProducts = []; // Lalagyan ng master copy ng listahan galing sa DB
+
+          const token = localStorage.getItem('token');
+
+          $(document).on('click', '#logoutBtn', function() {
+
+            localStorage.removeItem('token');
+            localStorage.removeItem('role');
+
+            window.location.href = 'login.html';
+
+            });
+
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+    var allProducts = []; // Lalagyan ng master copy ng listahan galing sa DB
 
             // 1. Kukunin muna ang lahat ng produkto sa simula (Read API)
             $.ajax({
@@ -107,7 +160,7 @@
                                     <h5 class="card-title text-brown">${item.name}</h5>
                                     <p class="card-text text-muted small">${item.description}</p>
                                     <h6 class="mt-auto text-success font-monospace fw-bold" style="font-size: 1.2rem;">₱${parseFloat(item.price).toFixed(2)}</h6>
-                                    <button class="btn btn-wood btn-sm mt-2 w-100">Add to Order</button>
+                                    <a href="product.html?id=${item.id}" class="btn btn-wood btn-sm mt-2 w-100"> View Details </a>
                                 </div>
                             </div>
                         </div>

@@ -18,4 +18,14 @@ const User = sequelize.define('User', {
     token: { type: DataTypes.TEXT, allowNull: true } 
 });
 
+const Cart = require('./cart');
+
+User.hasMany(Cart, {
+    foreignKey: 'userId'
+});
+
+Cart.belongsTo(User, {
+    foreignKey: 'userId'
+});
+
 module.exports = User;

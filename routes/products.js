@@ -34,6 +34,7 @@ const upload = multer({
 // ROUTES PARA SA PRODUCTS CRUD
 // Tumatanggap ng hanggang limang (5) pictures gamit ang upload.array('images', 5)
 router.get('/', productController.getAllProducts);
+router.get('/:id', productController.getProductById);
 router.post('/', upload.array('images', 5), productController.createProduct);
 router.put('/:id', upload.array('images', 5), productController.updateProduct);
 router.delete('/:id', productController.deleteProduct);

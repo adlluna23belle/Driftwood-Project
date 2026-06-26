@@ -8,4 +8,14 @@ const Product = sequelize.define('Product', {
     image: { type: DataTypes.STRING }
 });
 
+const Cart = require('./cart');
+
+Product.hasMany(Cart, {
+    foreignKey: 'productId'
+});
+
+Cart.belongsTo(Product, {
+    foreignKey: 'productId'
+});
+
 module.exports = Product;
