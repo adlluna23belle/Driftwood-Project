@@ -9,6 +9,8 @@ router.get('/:userId', cartController.getCart);
 
 router.put('/:id', cartController.updateQuantity);
 
+router.delete('/clear/:userId', cartController.clearCart);
+
 router.delete('/:id', cartController.removeItem);
 
 module.exports = router;

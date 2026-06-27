@@ -3,10 +3,10 @@ const path = require('path');
 const sequelize = require('./config/database');
 const productRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
-const authRoutes = require('./routes/auth'); // Idagdag ito
+const authRoutes = require('./routes/auth'); 
 const transactionRoutes =
 require('./routes/transactions');
-require('./models/user'); // Idagdag ito para ma-sync ang users table
+require('./models/user'); 
 require('./models/transaction');
 
 const app = express();

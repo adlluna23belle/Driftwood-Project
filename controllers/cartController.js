@@ -151,3 +151,32 @@ exports.updateQuantity = async (req, res) => {
     }
 
 };
+
+// CLEAR USER CART
+exports.clearCart = async (req, res) => {
+
+    try {
+
+        const { userId } = req.params;
+
+        await Cart.destroy({
+
+            where: {
+                userId
+            }
+
+        });
+
+        res.status(200).json({
+            message: 'Cart cleared.'
+        });
+
+    } catch (err) {
+
+        res.status(500).json({
+            error: err.message
+        });
+
+    }
+
+};

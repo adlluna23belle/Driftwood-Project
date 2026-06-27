@@ -212,14 +212,31 @@ $('#placeOrderBtn').click(function(){
 
                 success:function(){
 
+                $.ajax({
+
+                url:'/api/cart/clear/' + userId,
+
+                type:'DELETE',
+
+                success:function(){
+
+                alert(
+                    'Order placed successfully!'
+                );
+
+                window.location.href =
+                    'orders.html';
+
+            },
+
+                error:function(err){
+                    console.log(err);
                     alert(
-                        'Order placed successfully!'
+                        'Order created but failed to clear cart.'
                     );
-
-                    window.location.href =
-                        'orders.html';
-
-                },
+                }
+            });
+        },
 
                 error:function(err){
 

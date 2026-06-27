@@ -27,7 +27,7 @@
             margin-bottom: 40px;
         }
 
-        /* Ang 4 na Puting Kahon sa Taas (Summary Cards) */
+        /* Summary Cards */
         .stat-white-card {
             background: #ffffff;
             border-radius: 16px;
@@ -62,146 +62,165 @@
             flex-direction: column;
             justify-content: center;
         }
+        .text-brown {
+            color: #8b5a2b;
+        }
+        .btn-wood {
+            background-color: #8b5a2b;
+            color: white;
+        }
+        .btn-wood:hover {
+            background-color: #6f4721;
+            color: white;
+        }
     </style>
 </head>
 <body>
-    <header>
-        <h1>DRIFTWOOD FURNITURE</h1>
-        <p>Product & User Management System (Admin Panel)</p>
-        <div class="mt-2">
+<header class="bg-dark text-white p-3 mb-4">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="m-0 h3">DRIFTWOOD FURNITURE</h1>
+            <p class="m-0 small text-muted">Product & User Management System (Admin Panel)</p>
+        </div>
+        <div>
             <a href="index.html" class="btn btn-sm btn-outline-light me-2">Go to Customer View</a>
             <button class="btn btn-sm btn-danger" id="btnLogout">Logout</button>
         </div>
-    </header>
-
-    <div class="container mt-5">
-        <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active text-brown" id="products-tab" data-bs-toggle="tab" data-bs-target="#products-content" type="button" role="tab">
-                    Furniture Inventory
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link text-brown" id="users-tab" data-bs-toggle="tab" data-bs-target="#users-content" type="button" role="tab">
-                    User Accounts
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link text-brown" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard-content" type="button" role="tab">
-                    Analytics Dashboard
-                </button>
-            </li>
-        </ul>
-
-        <div class="tab-content" id="adminTabsContent">
-            
-            <div class="tab-pane fade show active" id="products-content" role="tabpanel">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="text-brown">Furniture Inventory</h2>
-                    <button class="btn btn-wood" data-bs-toggle="modal" data-bs-target="#productModal" id="btn-add-product">
-                        + Add New Furniture
-                    </button>
-                </div>
-                <div class="card p-4 shadow-sm bg-card mb-5">
-                    <table id="productsTable" class="table table-striped table-bordered w-100">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Images (Multiple Uploads)</th>
-                                <th>Name</th>
-                                <th>Description</th>
-                                <th>Price</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="tab-pane fade" id="users-content" role="tabpanel">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="text-brown">Registered Users Management</h2>
-                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#userModal">
-                        + Add New Employee/Staff
-                    </button>
-                </div>
-                <div class="card p-4 shadow-sm bg-card mb-5">
-                    <table id="usersTable" class="table table-striped table-bordered w-100">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Full Name</th>
-                                <th>Email</th>
-                                <th>Username</th>
-                                <th>Role</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="tab-pane fade" id="dashboard-content" role="tabpanel">
-                <h2 class="text-brown mb-4">System Performance Analytics</h2>
-                
-                <div class="dashboard-bg-panel">
-                    
-                    <div class="row g-4 mb-4">
-                        <div class="col-md-3">
-                            <div class="stat-white-card">
-                                <div class="stat-label">Users</div>
-                                <div class="stat-value" id="card-users-count">0</div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="stat-white-card">
-                                <div class="stat-label">Orders</div>
-                                <div class="stat-value" id="card-orders-count">0</div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="stat-white-card">
-                                <div class="stat-label">Revenue</div>
-                                <div class="stat-value" id="card-revenue-sum">₱0.00</div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="stat-white-card">
-                                <div class="stat-label">Products</div>
-                                <div class="stat-value" id="card-products-count">0</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row g-4">
-                        <div class="col-md-4">
-                            <div class="chart-white-card">
-                                <canvas id="ordersLineChart"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="chart-white-card">
-                                <canvas id="revenueBarChart"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="chart-white-card">
-                                <canvas id="categoriesPieChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
     </div>
+</header>
 
-    <div class="modal fade" id="userModal" tabindex="-1" aria-hidden="true">
+<div class="container">
+
+    <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active text-brown" id="products-tab" data-bs-toggle="tab" data-bs-target="#products-content" type="button" role="tab">
+                Furniture Inventory
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link text-brown" id="users-tab" data-bs-toggle="tab" data-bs-target="#users-content" type="button" role="tab">
+                User Accounts
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link text-brown" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard-content" type="button" role="tab">
+                Analytics Dashboard
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link text-brown" id="transactions-tab" data-bs-toggle="tab" data-bs-target="#transactions-content" type="button" role="tab">
+                Transactions
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="adminTabsContent">
+        
+        <div class="tab-pane fade show active" id="products-content" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-brown">Furniture Inventory Management</h2>
+                <button class="btn btn-success" id="btn-add-product" data-bs-toggle="modal" data-bs-target="#productModal">
+                    + Add New Furniture
+                </button>
+            </div>
+            <div class="card p-4 shadow-sm mb-5">
+                <table id="productsTable" class="table table-striped table-bordered w-100">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Price</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="users-content" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-brown">Registered Users Management</h2>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#userModal">
+                    + Add New Employee/Staff
+                </button>
+            </div>
+            <div class="card p-4 shadow-sm mb-5">
+                <table id="usersTable" class="table table-striped table-bordered w-100">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="dashboard-content" role="tabpanel">
+            <h2 class="text-brown mb-4">System Performance Analytics</h2>
+            <div class="dashboard-bg-panel">
+                <div class="row g-4 mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-white-card">
+                            <div class="stat-label">Users</div>
+                            <div class="stat-value" id="card-users-count">0</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-white-card">
+                            <div class="stat-label">Orders</div>
+                            <div class="stat-value" id="card-orders-count">0</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-white-card">
+                            <div class="stat-label">Revenue</div>
+                            <div class="stat-value" id="card-revenue-sum">₱0.00</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-white-card">
+                            <div class="stat-label">Products</div>
+                            <div class="stat-value" id="card-products-count">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="chart-white-card">
+                            <canvas id="ordersLineChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="chart-white-card">
+                            <canvas id="revenueBarChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="chart-white-card">
+                            <canvas id="categoriesPieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="transactions-content" role="tabpanel">
+            <h2 class="text-brown mb-4">Transaction History Logs</h2>
+            <div class="alert alert-info">Transaction monitoring interface incoming framework updates.</div>
+        </div>
+
+    </div> </div> <div class="modal fade" id="userModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -328,44 +347,35 @@
                 ]
             });
 
-            // --- FUNCTION PARA DYNAMICALLY NA BILANGIN ANG REKORDS SA BOXES (REAL-TIME FILTERED) ---
+            // --- METRIC BOX CALCULATOR ---
             function updateDynamicBoxes() {
-                // 1. Kunin ang total rows ng products sa database
-                var totalProducts = productTable.rows().count();
+                if(productTable.rows().count() > 0) {
+                    var totalProducts = productTable.rows().count();
+                    $('#card-products-count').text(totalProducts);
+                }
                 
-                // 2. FILTER: Bibilangin lang ang may status na 'active'
                 var activeUsersCount = 0;
-                userTable.rows().data().each(function(row) {
-                    if (row.status === 'active') {
-                        activeUsersCount++;
-                    }
-                });
-
-                // I-inject ang mga kalkulasyon sa dashboard ui cards
-                $('#card-products-count').text(totalProducts || 0);
-                $('#card-users-count').text(activeUsersCount || 0);
-                
-                // Naka-zero state muna ang orders/revenue tulad ng napagkasunduan
+                if(userTable.rows().count() > 0) {
+                    userTable.rows().data().each(function(row) {
+                        if (row.status === 'active') activeUsersCount++;
+                    });
+                }
+                $('#card-users-count').text(activeUsersCount);
                 $('#card-orders-count').text(0);
                 $('#card-revenue-sum').text('₱0.00');
             }
 
-            // --- CHART.JS RENDERING ENGINE (TRUE ZERO TIMELINE UNTIL END OF 2026) ---
+            // --- CHART RENDERING ENGINE ---
             function renderExactTargetCharts() {
-                
-                // Awtomatikong i-update ang apat na kahon bago i-render ang charts
                 updateDynamicBoxes();
 
-                // A. LINE CHART (Orders - Flat sa zero line)
+                // A. LINE CHART
                 if (lineInstance) lineInstance.destroy();
                 var ctxLine = document.getElementById('ordersLineChart').getContext('2d');
                 lineInstance = new Chart(ctxLine, {
                     type: 'line',
                     data: {
-                        labels: [
-                            '2026-05-28', '2026-06-24', '2026-07-15', '2026-08-15', 
-                            '2026-09-15', '2026-10-15', '2026-11-15', '2026-12-15', '2026-12-31'
-                        ],
+                        labels: ['2026-05-28', '2026-06-24', '2026-07-15', '2026-08-15', '2026-09-15', '2026-10-15', '2026-11-15', '2026-12-15', '2026-12-31'],
                         datasets: [{
                             label: 'Orders',
                             data: [0, 0, 0, 0, 0, 0, 0, 0, 0], 
@@ -380,39 +390,30 @@
                     },
                     options: {
                         responsive: true,
-                        scales: {
-                            y: { min: -1.0, max: 1.0, ticks: { stepSize: 0.2 } }
-                        }
+                        scales: { y: { min: -1.0, max: 1.0, ticks: { stepSize: 0.2 } } }
                     }
                 });
 
-                // B. BAR CHART (Revenue - Lahat naka-zero hanggang dulo ng 2026)
+                // B. BAR CHART
                 if (barInstance) barInstance.destroy();
                 var ctxBar = document.getElementById('revenueBarChart').getContext('2d');
                 barInstance = new Chart(ctxBar, {
                     type: 'bar',
                     data: {
-                        labels: [
-                            'Jul 2025', 'Aug 2025', 'Sep 2025', 'Oct 2025', 'Nov 2025', 'Dec 2025', 
-                            'Jan 2026', 'Feb 2026', 'Mar 2026', 'Apr 2026', 'May 2026', 'Jun 2026',
-                            'Jul 2026', 'Aug 2026', 'Sep 2026', 'Oct 2026', 'Nov 2026', 'Dec 2026'
-                        ],
+                        labels: ['Jul 2025', 'Aug 2025', 'Sep 2025', 'Oct 2025', 'Nov 2025', 'Dec 2025', 'Jan 2026', 'Feb 2026', 'Mar 2026', 'Apr 2026', 'May 2026', 'Jun 2026', 'Jul 2026', 'Aug 2026', 'Sep 2026', 'Oct 2026', 'Nov 2026', 'Dec 2026'],
                         datasets: [{
                             label: 'Revenue',
                             data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
-                            backgroundColor: '#1c1917',
-                            borderWidth: 0
+                            backgroundColor: '#1c1917'
                         }]
                     },
                     options: {
                         responsive: true,
-                        scales: {
-                            y: { min: 0, max: 100, ticks: { stepSize: 20 } }
-                        }
+                        scales: { y: { min: 0, max: 100, ticks: { stepSize: 20 } } }
                     }
                 });
 
-                // C. PIE CHART (Categories - Naka-set sa No Orders muna)
+                // C. PIE CHART
                 if (pieInstance) pieInstance.destroy();
                 var ctxPie = document.getElementById('categoriesPieChart').getContext('2d');
                 pieInstance = new Chart(ctxPie, {
@@ -420,28 +421,20 @@
                     data: {
                         labels: ['No Orders Yet'], 
                         datasets: [{
-                            data: [0], 
-                            backgroundColor: ['#e5dfd8'],
-                            borderWidth: 1,
-                            borderColor: '#fff'
+                            data: [1], 
+                            backgroundColor: ['#e5dfd8']
                         }]
                     },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: { display: true }
-                        }
-                    }
+                    options: { responsive: true }
                 });
             }
 
-            // Mag-trigger tuwing iki-click ang Analytics Dashboard tab
+            // Tab Triggers
             $('#dashboard-tab').click(function() {
                 setTimeout(renderExactTargetCharts, 150);
             });
 
-
-            // --- JQUERY VALIDATIONS (Quiz 4 - Secure Form Blockers) ---
+            // --- JQUERY FORM VALIDATIONS ---
             $("#productForm").validate({
                 rules: { name: { required: true, minlength: 3 }, price: { required: true, number: true, min: 1 }, description: { required: true, minlength: 10 }, images: { required: function() { return $("#productId").val() === ""; } } },
                 messages: { name: { required: "Please enter the furniture name." }, price: { required: "Please enter a valid price." }, description: { required: "Please add layout description." }, images: { required: "Select photos to distribute." } },
@@ -462,9 +455,7 @@
                         success: function() { 
                             $('#productModal').modal('hide'); 
                             form.reset(); 
-                            productTable.ajax.reload(function() {
-                                updateDynamicBoxes(); // Trigger dynamic count updates immediately
-                            }); 
+                            productTable.ajax.reload(function() { updateDynamicBoxes(); }); 
                         } 
                     });
                 }
@@ -492,9 +483,7 @@
                                             success: function() { 
                                                 $('#userModal').modal('hide'); 
                                                 form.reset(); 
-                                                userTable.ajax.reload(function() {
-                                                    updateDynamicBoxes(); // Live updates immediately upon registration
-                                                }); 
+                                                userTable.ajax.reload(function() { updateDynamicBoxes(); }); 
                                             } 
                                         }); 
                                     }
@@ -505,22 +494,14 @@
                 }
             });
 
-            // DATA HANDLING & MANAGEMENT CRUD ACTIONS
+            // ACTION CRUD HOOKS
             $('#btn-add-product').click(function() { $("#productForm").validate().resetForm(); $('#productForm')[0].reset(); $('#productId').val(''); $('#modalTitle').text('Add New Furniture'); $('#editImagesWarning').addClass('d-none'); });
             $(document).on('click', '.edit-btn', function() { $("#productForm").validate().resetForm(); $('#modalTitle').text('Edit Furniture Details'); $('#productId').val($(this).data('id')); $('#productName').val($(this).data('name')); $('#productPrice').val($(this).data('price')); $('#productDescription').val($(this).data('desc')); $('#editImagesWarning').removeClass('d-none'); $('#productModal').modal('show'); });
             
             $(document).on('click', '.delete-btn', function() { 
                 var id = $(this).data('id'); 
                 if (confirm('Burahin ang furniture na ito?')) { 
-                    $.ajax({ 
-                        url: '/api/products/' + id, 
-                        type: 'DELETE', 
-                        success: function() { 
-                            productTable.ajax.reload(function() {
-                                updateDynamicBoxes(); // Awtomatikong babawas ang product card counter
-                            }); 
-                        } 
-                    }); 
+                    $.ajax({ url: '/api/products/' + id, type: 'DELETE', success: function() { productTable.ajax.reload(function() { updateDynamicBoxes(); }); } }); 
                 } 
             });
             
@@ -531,24 +512,12 @@
                 var currentStatus = $(this).data('status'); 
                 var newStatus = currentStatus === 'active' ? 'inactive' : 'active'; 
                 if (confirm(`Make account ${newStatus}?`)) { 
-                    $.ajax({ 
-                        url: '/api/auth/users/status/' + id, 
-                        type: 'PUT', 
-                        contentType: 'application/json', 
-                        headers: { "Authorization": "Bearer " + localStorage.getItem('token') }, 
-                        data: JSON.stringify({ status: newStatus }), 
-                        success: function() { 
-                            userTable.ajax.reload(function() {
-                                updateDynamicBoxes(); // Kapag nag-deactivate, kusa itong babawas/dadagdag agad!
-                            }); 
-                        } 
-                    }); 
+                    $.ajax({ url: '/api/auth/users/status/' + id, type: 'PUT', contentType: 'application/json', headers: { "Authorization": "Bearer " + localStorage.getItem('token') }, data: JSON.stringify({ status: newStatus }), success: function() { userTable.ajax.reload(function() { updateDynamicBoxes(); }); } }); 
                 } 
             });
 
             $('#btnLogout').click(function() { localStorage.clear(); alert('Logged out!'); window.location.href = 'login.html'; });
             
-            // Core initial rendering and listeners for seamless tab interaction
             productTable.on('draw', function() { updateDynamicBoxes(); });
             userTable.on('draw', function() { updateDynamicBoxes(); });
         });
