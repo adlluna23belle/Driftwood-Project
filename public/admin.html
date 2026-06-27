@@ -168,6 +168,7 @@
         <div class="tab-pane fade" id="dashboard-content" role="tabpanel">
             <h2 class="text-brown mb-4">System Performance Analytics</h2>
             <div class="dashboard-bg-panel">
+                
                 <div class="row g-4 mb-4">
                     <div class="col-md-3">
                         <div class="stat-white-card">
@@ -195,32 +196,70 @@
                     </div>
                 </div>
 
-                <div class="row g-4">
-                    <div class="col-md-4">
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
                         <div class="chart-white-card">
+                            <h6 class="text-muted mb-2 fw-bold">Orders Per Day</h6>
                             <canvas id="ordersLineChart"></canvas>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="chart-white-card">
+                            <h6 class="text-muted mb-2 fw-bold">Revenue Per Day</h6>
                             <canvas id="revenueBarChart"></canvas>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
                         <div class="chart-white-card">
-                            <canvas id="categoriesPieChart"></canvas>
+                            <h6 class="text-muted mb-2 fw-bold">Order Status Distribution</h6>
+                            <canvas id="statusPieChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="chart-white-card p-4">
+                            <h6 class="text-muted mb-3 fw-bold">Sales Distribution by Product</h6>
+                            <div class="row align-items-center">
+                                <div class="col-md-5">
+                                    <div id="productSalesLegend"></div>
+                                </div>
+                                <div class="col-md-7">
+                                    <canvas id="productSalesChart"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
 
         <div class="tab-pane fade" id="transactions-content" role="tabpanel">
             <h2 class="text-brown mb-4">Transaction History Logs</h2>
-            <div class="alert alert-info">Transaction monitoring interface incoming framework updates.</div>
+            <div class="card p-4 shadow-sm">
+                <table id="transactionsTable" class="table table-striped table-bordered w-100">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Customer</th>
+                            <th>Contact</th>
+                            <th>Total Amount</th>
+                            <th>Status</th>
+                            <th>Items Ordered</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
 
-    </div> </div> <div class="modal fade" id="userModal" tabindex="-1" aria-hidden="true">
+    </div> 
+</div> 
+
+    <div class="modal fade" id="userModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -306,7 +345,10 @@
                 return;
             }
 
-            var lineInstance, barInstance, pieInstance;
+            let lineInstance;
+            let barInstance;
+            let pieInstance;
+            let productSalesInstance;
 
             // 1. PRODUCTS DATATABLE
             var productTable = $('#productsTable').DataTable({
@@ -347,6 +389,40 @@
                 ]
             });
 
+            // 3. TRANSACTIONS DATATABLE
+            var transactionTable = $('#transactionsTable').DataTable({
+                ajax: {
+                    url: '/api/transactions',
+                    dataSrc: ''
+                },
+                order: [[0, 'desc']],
+                columns: [
+                    { data: 'id' },
+                    { data: 'customerName' },
+                    { data: 'customerEmail' },
+                    { data: 'totalAmount', render: function(data) { return '₱' + parseFloat(data).toLocaleString(); } },
+                    {
+                        data: 'status',
+                        render: function(data) {
+                            let badgeClass = 'bg-warning';
+                            if(data === 'Completed') badgeClass = 'bg-success';
+                            if(data === 'Cancelled') badgeClass = 'bg-danger';
+                            return `<span class="badge ${badgeClass}">${data}</span>`;
+                        }
+                    },
+                    {
+                        data: 'items',
+                        render: function(data) {
+                            try {
+                                const items = JSON.parse(data);
+                                return items.map(item => `${item.productName} (x${item.quantity})`).join('<br>');
+                            } catch { return 'No Items'; }
+                        }
+                    },
+                    { data: 'createdAt', render: function(data) { return new Date(data).toLocaleString(); } }
+                ]
+            });
+
             // --- METRIC BOX CALCULATOR ---
             function updateDynamicBoxes() {
                 if(productTable.rows().count() > 0) {
@@ -361,75 +437,138 @@
                     });
                 }
                 $('#card-users-count').text(activeUsersCount);
-                $('#card-orders-count').text(0);
-                $('#card-revenue-sum').text('₱0.00');
+
+                // Transactions Metrics
+                if (typeof transactionTable !== 'undefined' && transactionTable.rows().count() > 0) {
+                    let totalRevenue = 0;
+                    transactionTable.rows().data().each(function(row) {
+                        totalRevenue += parseFloat(row.totalAmount || 0);
+                    });
+                    $('#card-orders-count').text(transactionTable.rows().count());
+                    $('#card-revenue-sum').text('₱' + totalRevenue.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }));
+                } else {
+                    $('#card-orders-count').text('0');
+                    $('#card-revenue-sum').text('₱0.00');
+                }
             }
 
             // --- CHART RENDERING ENGINE ---
             function renderExactTargetCharts() {
                 updateDynamicBoxes();
 
-                // A. LINE CHART
+                // A. LINE CHART (REAL TRANSACTION DATA)
+                const ordersPerDay = {};
+                if (typeof transactionTable !== 'undefined') {
+                    transactionTable.rows().data().each(function(row) {
+                        const date = new Date(row.createdAt).toLocaleDateString();
+                        if (!ordersPerDay[date]) { ordersPerDay[date] = 0; }
+                        ordersPerDay[date]++;
+                    });
+                }
+
+                const lineLabels = Object.keys(ordersPerDay);
+                const lineValues = Object.values(ordersPerDay);
+
                 if (lineInstance) lineInstance.destroy();
                 var ctxLine = document.getElementById('ordersLineChart').getContext('2d');
                 lineInstance = new Chart(ctxLine, {
                     type: 'line',
                     data: {
-                        labels: ['2026-05-28', '2026-06-24', '2026-07-15', '2026-08-15', '2026-09-15', '2026-10-15', '2026-11-15', '2026-12-15', '2026-12-31'],
+                        labels: lineLabels,
                         datasets: [{
-                            label: 'Orders',
-                            data: [0, 0, 0, 0, 0, 0, 0, 0, 0], 
+                            label: 'Orders Per Day',
+                            data: lineValues,
                             borderColor: '#a07040',
                             backgroundColor: '#a07040',
                             borderWidth: 2,
-                            pointBackgroundColor: '#fff',
-                            pointBorderColor: '#a07040',
-                            pointRadius: 4,
-                            tension: 0
+                            tension: 0.3
                         }]
                     },
-                    options: {
-                        responsive: true,
-                        scales: { y: { min: -1.0, max: 1.0, ticks: { stepSize: 0.2 } } }
-                    }
+                    options: { responsive: true, plugins: { legend: { display: false } } }
                 });
 
-                // B. BAR CHART
+                // B. BAR CHART (REAL REVENUE DATA)
+                const revenuePerDay = {};
+                if (typeof transactionTable !== 'undefined') {
+                    transactionTable.rows().data().each(function(row) {
+                        const date = new Date(row.createdAt).toLocaleDateString();
+                        if (!revenuePerDay[date]) { revenuePerDay[date] = 0; }
+                        revenuePerDay[date] += parseFloat(row.totalAmount || 0);
+                    });
+                }
+
+                const revenueLabels = Object.keys(revenuePerDay);
+                const revenueValues = Object.values(revenuePerDay);
+
                 if (barInstance) barInstance.destroy();
                 var ctxBar = document.getElementById('revenueBarChart').getContext('2d');
                 barInstance = new Chart(ctxBar, {
                     type: 'bar',
                     data: {
-                        labels: ['Jul 2025', 'Aug 2025', 'Sep 2025', 'Oct 2025', 'Nov 2025', 'Dec 2025', 'Jan 2026', 'Feb 2026', 'Mar 2026', 'Apr 2026', 'May 2026', 'Jun 2026', 'Jul 2026', 'Aug 2026', 'Sep 2026', 'Oct 2026', 'Nov 2026', 'Dec 2026'],
+                        labels: revenueLabels,
                         datasets: [{
-                            label: 'Revenue',
-                            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+                            label: 'Revenue Per Day',
+                            data: revenueValues,
                             backgroundColor: '#1c1917'
                         }]
                     },
-                    options: {
-                        responsive: true,
-                        scales: { y: { min: 0, max: 100, ticks: { stepSize: 20 } } }
-                    }
+                    options: { responsive: true, plugins: { legend: { display: false } } }
                 });
 
-                // C. PIE CHART
+                // C. PIE CHART (REAL STATUS DATA)
+                const statusCounts = { Pending: 0, Completed: 0, Cancelled: 0 };
+                if (typeof transactionTable !== 'undefined') {
+                    transactionTable.rows().data().each(function(row) {
+                        const status = row.status || 'Pending';
+                        if (statusCounts.hasOwnProperty(status)) { statusCounts[status]++; }
+                    });
+                }
+
                 if (pieInstance) pieInstance.destroy();
-                var ctxPie = document.getElementById('categoriesPieChart').getContext('2d');
+                var ctxPie = document.getElementById('statusPieChart').getContext('2d');
                 pieInstance = new Chart(ctxPie, {
                     type: 'pie',
                     data: {
-                        labels: ['No Orders Yet'], 
+                        labels: Object.keys(statusCounts),
                         datasets: [{
-                            data: [1], 
-                            backgroundColor: ['#e5dfd8']
+                            data: Object.values(statusCounts),
+                            backgroundColor: ['#f59e0b', '#10b981', '#ef4444']
                         }]
                     },
-                    options: { responsive: true }
+                    options: { responsive: true, plugins: { legend: { position: 'right' } } }
+                });
+
+                // D. PRODUCT SALES DOUGHNUT CHART
+                const productSales = {};
+                if (typeof transactionTable !== 'undefined') {
+                    transactionTable.rows().data().each(function(row) {
+                        try {
+                            const items = JSON.parse(row.items);
+                            items.forEach(item => {
+                                const amount = parseFloat(item.price) * parseInt(item.quantity);
+                                if (!productSales[item.productName]) { productSales[item.productName] = 0; }
+                                productSales[item.productName] += amount;
+                            });
+                        } catch (e) { console.error(e); }
+                    });
+                }
+
+                if (productSalesInstance) productSalesInstance.destroy();
+                var ctxProduct = document.getElementById('productSalesChart').getContext('2d');
+                productSalesInstance = new Chart(ctxProduct, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(productSales),
+                        datasets: [{ data: Object.values(productSales) }]
+                    },
+                    options: { responsive: true, plugins: { legend: { position: 'right' } } }
                 });
             }
 
-            // Tab Triggers
+            // Tab Triggers Fix
             $('#dashboard-tab').click(function() {
                 setTimeout(renderExactTargetCharts, 150);
             });
@@ -520,6 +659,7 @@
             
             productTable.on('draw', function() { updateDynamicBoxes(); });
             userTable.on('draw', function() { updateDynamicBoxes(); });
+            transactionTable.on('draw', function() { updateDynamicBoxes(); });
         });
     </script>
 </body>
