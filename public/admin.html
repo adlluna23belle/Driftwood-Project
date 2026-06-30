@@ -222,10 +222,7 @@
                         <div class="chart-white-card p-4">
                             <h6 class="text-muted mb-3 fw-bold">Sales Distribution by Product</h6>
                             <div class="row align-items-center">
-                                <div class="col-md-5">
-                                    <div id="productSalesLegend"></div>
-                                </div>
-                                <div class="col-md-7">
+                                <div class="col-md-12">
                                     <canvas id="productSalesChart"></canvas>
                                 </div>
                             </div>
@@ -459,7 +456,7 @@
             function renderExactTargetCharts() {
                 updateDynamicBoxes();
 
-                // A. LINE CHART (REAL TRANSACTION DATA)
+                // A. LINE CHART (ORDERS PER DAY)
                 const ordersPerDay = {};
                 if (typeof transactionTable !== 'undefined') {
                     transactionTable.rows().data().each(function(row) {
@@ -479,18 +476,31 @@
                     data: {
                         labels: lineLabels,
                         datasets: [{
-                            label: 'Orders Per Day',
+                            label: 'Orders Total',
                             data: lineValues,
-                            borderColor: '#a07040',
-                            backgroundColor: '#a07040',
-                            borderWidth: 2,
-                            tension: 0.3
+                            borderColor: '#8b5a2b',
+                            backgroundColor: 'rgba(139, 90, 43, 0.15)',
+                            fill: true,
+                            borderWidth: 3,
+                            pointBackgroundColor: '#6f4721',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            tension: 0.35
                         }]
                     },
-                    options: { responsive: true, plugins: { legend: { display: false } } }
+                    options: { 
+                        responsive: true, 
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: '#f1f1f1' }, ticks: { stepSize: 1, color: '#6c757d' } },
+                            x: { grid: { display: false }, ticks: { color: '#6c757d' } }
+                        }
+                    }
                 });
 
-                // B. BAR CHART (REAL REVENUE DATA)
+                // B. BAR CHART (REVENUE PER DAY)
                 const revenuePerDay = {};
                 if (typeof transactionTable !== 'undefined') {
                     transactionTable.rows().data().each(function(row) {
@@ -510,15 +520,33 @@
                     data: {
                         labels: revenueLabels,
                         datasets: [{
-                            label: 'Revenue Per Day',
+                            label: 'Daily Earnings',
                             data: revenueValues,
-                            backgroundColor: '#1c1917'
+                            backgroundColor: 'linear-gradient(180deg, #1c1917 0%, #44403c 100%)',
+                            backgroundColor: '#292524',
+                            borderRadius: 6,
+                            borderSkipped: false,
+                            barThickness: 45
                         }]
                     },
-                    options: { responsive: true, plugins: { legend: { display: false } } }
+                    options: { 
+                        responsive: true, 
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { 
+                                beginAtZero: true, 
+                                grid: { color: '#f1f1f1' },
+                                ticks: {
+                                    color: '#6c757d',
+                                    callback: function(value) { return '₱' + value.toLocaleString(); }
+                                }
+                            },
+                            x: { grid: { display: false }, ticks: { color: '#6c757d' } }
+                        }
+                    }
                 });
 
-                // C. PIE CHART (REAL STATUS DATA)
+                // C. PIE CHART (ORDER STATUS DISTRIBUTION)
                 const statusCounts = { Pending: 0, Completed: 0, Cancelled: 0 };
                 if (typeof transactionTable !== 'undefined') {
                     transactionTable.rows().data().each(function(row) {
@@ -535,10 +563,20 @@
                         labels: Object.keys(statusCounts),
                         datasets: [{
                             data: Object.values(statusCounts),
-                            backgroundColor: ['#f59e0b', '#10b981', '#ef4444']
+                            backgroundColor: ['#d97706', '#059669', '#dc2626'],
+                            borderWidth: 3,
+                            borderColor: '#ffffff'
                         }]
                     },
-                    options: { responsive: true, plugins: { legend: { position: 'right' } } }
+                    options: { 
+                        responsive: true, 
+                        plugins: { 
+                            legend: { 
+                                position: 'right',
+                                labels: { boxWidth: 15, padding: 15, font: { size: 12, weight: '500' }, color: '#44403c' }
+                            } 
+                        } 
+                    }
                 });
 
                 // D. PRODUCT SALES DOUGHNUT CHART
@@ -562,9 +600,23 @@
                     type: 'doughnut',
                     data: {
                         labels: Object.keys(productSales),
-                        datasets: [{ data: Object.values(productSales) }]
+                        datasets: [{ 
+                            data: Object.values(productSales),
+                            backgroundColor: ['#0284c7', '#ec4899', '#8b5a2b', '#10b981', '#f59e0b'],
+                            borderWidth: 4,
+                            borderColor: '#ffffff'
+                        }]
                     },
-                    options: { responsive: true, plugins: { legend: { position: 'right' } } }
+                    options: { 
+                        responsive: true, 
+                        plugins: { 
+                            legend: { 
+                                position: 'right',
+                                labels: { boxWidth: 15, padding: 15, font: { size: 12, weight: '500' }, color: '#44403c' }
+                            } 
+                        },
+                        cutout: '65%'
+                    }
                 });
             }
 
