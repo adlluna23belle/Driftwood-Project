@@ -33,13 +33,16 @@ exports.createTransaction = async (req, res) => {
                 ? customerEmail 
                 : 'customer.test@driftwood.com';
 
+            // Ipinasa na rin ang items at totalAmount para maisama sa PDF Generation
             await sendStatusEmail(
                 finalEmail, 
                 customerName || 'Customer', 
                 transaction.id, 
-                'Pending'
+                'Pending',
+                transaction.items,
+                transaction.totalAmount
             );
-            console.log("[Mailtrap] New order notification sent successfully!");
+            console.log("[Mailtrap] New order notification sent successfully with PDF receipt!");
         } catch (mailErr) {
             console.error("⚠️ Trans email failed to send, but order was created:", mailErr);
         }
@@ -122,14 +125,16 @@ exports.updateTransaction = async (req, res) => {
 
             console.log(`Filtered Email Destination: ${finalEmail}`);
 
-            // Gagamitin na natin ang sendStatusEmail mula sa utils/mailer.js
+            // Gagamitin na natin ang sendStatusEmail mula sa utils/mailer.js kasama ang items at totalAmount para sa PDF Builder
             await sendStatusEmail(
                 finalEmail, 
                 transaction.customerName || 'Customer', 
                 transaction.id, 
-                newStatus
+                newStatus,
+                transaction.items,
+                transaction.totalAmount
             );
-            console.log("[Mailtrap] Status update email notification sent successfully!");
+            console.log("[Mailtrap] Status update email notification sent successfully with PDF receipt!");
         } catch (mailErr) {
             console.error("⚠️ Status update email failed to send, but status was updated:", mailErr);
         }
