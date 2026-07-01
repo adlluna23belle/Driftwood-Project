@@ -386,7 +386,7 @@
                 ]
             });
 
-            // 3. TRANSACTIONS DATATABLE
+            // 3. TRANSACTIONS DATATABLE (PINALITAN AT GINAWANG SELECT DROPDOWN ANG STATUS COLUMN)
             var transactionTable = $('#transactionsTable').DataTable({
                 ajax: {
                     url: '/api/transactions',
@@ -400,11 +400,20 @@
                     { data: 'totalAmount', render: function(data) { return '₱' + parseFloat(data).toLocaleString(); } },
                     {
                         data: 'status',
-                        render: function(data) {
-                            let badgeClass = 'bg-warning';
-                            if(data === 'Completed') badgeClass = 'bg-success';
-                            if(data === 'Cancelled') badgeClass = 'bg-danger';
-                            return `<span class="badge ${badgeClass}">${data}</span>`;
+                        render: function(data, type, row) {
+                            let selectedPending = data === 'Pending' ? 'selected' : '';
+                            let selectedShipped = data === 'Shipped' ? 'selected' : '';
+                            let selectedCompleted = data === 'Completed' ? 'selected' : '';
+                            let selectedCancelled = data === 'Cancelled' ? 'selected' : '';
+
+                            return `
+                                <select class="form-select form-select-sm update-order-status-btn" data-id="${row.id}" style="width: 130px;">
+                                    <option value="Pending" ${selectedPending}>Pending</option>
+                                    <option value="Shipped" ${selectedShipped}>Shipped</option>
+                                    <option value="Completed" ${selectedCompleted}>Completed</option>
+                                    <option value="Cancelled" ${selectedCancelled}>Cancelled</option>
+                                </select>
+                            `;
                         }
                     },
                     {
@@ -418,6 +427,27 @@
                     },
                     { data: 'createdAt', render: function(data) { return new Date(data).toLocaleString(); } }
                 ]
+            });
+
+            // --- EVENT LISTENER PARA SA PAGBABAGO NG STATUS DROPDOWN ---
+            $(document).on('change', '.update-order-status-btn', function() {
+                const transactionId = $(this).data('id');
+                const newStatus = $(this).val();
+
+                $.ajax({
+                    url: `/api/transactions/${transactionId}`,
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ status: newStatus }),
+                    success: function(response) {
+                        alert('Transaction status updated successfully!');
+                        transactionTable.ajax.reload(function() { updateDynamicBoxes(); });
+                    },
+                    error: function(err) {
+                        console.error(err);
+                        alert('Failed to update status.');
+                    }
+                });
             });
 
             // --- METRIC BOX CALCULATOR ---
@@ -522,7 +552,6 @@
                         datasets: [{
                             label: 'Daily Earnings',
                             data: revenueValues,
-                            backgroundColor: 'linear-gradient(180deg, #1c1917 0%, #44403c 100%)',
                             backgroundColor: '#292524',
                             borderRadius: 6,
                             borderSkipped: false,
